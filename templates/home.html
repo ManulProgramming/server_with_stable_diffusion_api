@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colors</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #202020;
+            color: white;
+            white-space: normal;
+            overflow: hidden;
+        }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #202020;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2;
+        }
+        .initial-text {
+            font-size: 2rem;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-in-out 2s forwards;
+        }
+        .color-box-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-in-out 4s forwards;
+        }
+        .color-box {
+            width: 150px;
+            height: 150px;
+            background-color: {{ color }};
+        }
+        .color-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .proceed-text {
+            font-size: 1.5rem;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-in-out 7s forwards;
+        }
+        .main-page {
+            opacity: {{ opacity|safe }};
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #303030;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            {{ animation|safe }}
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 1200px;
+            padding: 20px;
+            background-color: #404040;
+            color: white;
+        }
+        .header-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .header-box {
+            width: 30px;
+            height: 30px;
+            background-color: {{ color }};
+        }
+        .content {
+            flex: 1;
+            display: flex;
+            width: 98%;
+            max-width: 1000px;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            overflow-y: auto;
+        }
+        .input-box {
+            width: 500px;
+            max-width: 80vw;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #303030;
+            background-color : #404040;
+            border-radius: 5px;
+        }
+        .button {
+            width: 500px;
+            max-width: 80vw;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #303030;
+            background-color : #404040;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            border-radius: 5px;
+            background: #404040;
+        }
+        ::-webkit-scrollbar-thumb {
+            border-radius: 5px;
+            background: #1d1d1d;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #232323;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+{{ overlay|safe }}
+
+<div class="main-page">
+    <div class="header">
+        <div class="header-text">{{ color.upper() }}</div>
+        <div class="header-box"></div>
+    </div>
+    <div class="content">
+        <form id="input-form" method="POST" action="/submit" onkeydown="return event.key != 'Enter';">
+            <input class="input-box" style="margin-top:20px;color:white" type="text" name="input-box" id="input-box" placeholder="Write your prompt here...">
+            <p id="error" style="color: red;"></p>
+            <br>Width: <select class="input-box" style="width:80px;color:white;" name="reswidth" id="reswidth">
+            <option value="768">768</option>
+            <option value="1024">1024</option>
+        </select>
+            <br>Height: <select class="input-box" style="width:80px;color:white;" name="resheight" id="resheight">
+            <option value="768">768</option>
+            <option value="1024">1024</option>
+        </select>
+        </form>
+        <button class="button" style="width:100px;color:white;" type="submit" form="input-form" value="Send">Send</button>
+        {{ messages|safe }}
+    </div>
+</div>
+<script>
+    {{ render_overlay|safe }}
+
+    document.getElementById('input-form').addEventListener('submit', function(event) {
+        const input = document.getElementById('input-box').value;
+        if (input == null || input === ''){
+            event.preventDefault();
+            document.getElementById('error').innerText = 'The prompt cannot be empty!';
+        }else if(input.length > 2000){
+            event.preventDefault();
+            document.getElementById('error').innerText = 'Amount of symbols should not be more than 2000!';
+        }
+    });
+</script>
+</body>
+</html>
